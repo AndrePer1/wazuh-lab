@@ -1,0 +1,87 @@
+<!--
+  Wazuh Lab — custom rules (student-facing)
+
+  IDs 100100–100179. Each rule is described in terms of what it
+  *literally matches* — a regex, a field value, a decoded substring.
+  The descriptions do not name the attack class each rule represents;
+  mapping them to CVEs and MITRE techniques is part of Lab 3.
+
+  Severity levels are a starting point. Several are deliberately
+  conservative; raising them (and adding correlation rules) is part of
+  Lab 3.
+-->
+
+<group name="wazuh-lab,">
+
+  <rule id="100120" level="6">
+    <if_sid>31100</if_sid>
+    <regex>\.%2e/|/%2e\.</regex>
+    <description>HTTP request: url contains an encoded '..' segment</description>
+  </rule>
+
+  <rule id="100175" level="7">
+    <if_sid>31105</if_sid>
+    <description>HTTP request: url contains a scripting expression pattern</description>
+    <mitre>
+      <id>T1059.007</id>
+    </mitre>
+  </rule>
+
+  <rule id="100130" level="6">
+    <match>jndi:</match>
+    <description>Application log line contains the substring 'jndi:'</description>
+  </rule>
+
+  <rule id="100140" level="5">
+    <match>pkexec</match>
+    <description>System log: 'pkexec' substring observed</description>
+  </rule>
+
+  <rule id="100150" level="8">
+    <if_sid>550,554</if_sid>
+    <field name="file">/etc/passwd</field>
+    <description>FIM: /etc/passwd file changed</description>
+  </rule>
+
+  <rule id="100165" level="3">
+    <decoded_as>corpnet-login</decoded_as>
+    <match>result=failure</match>
+    <description>CorpNet Portal: login failed for user $(dstuser)</description>
+  </rule>
+
+  <rule id="100166" level="5">
+    <decoded_as>corpnet-login</decoded_as>
+    <match>result=success</match>
+    <description>CorpNet Portal: login succeeded for user $(dstuser)</description>
+  </rule>
+
+  <rule id="100163" level="3">
+    <if_sid>31101</if_sid>
+    <url>/login</url>
+    <description>HTTP: POST /login — authentication failed</description>
+  </rule>
+
+  <rule id="100164" level="5">
+    <if_sid>31108</if_sid>
+    <match>POST /login</match>
+    <description>HTTP: POST /login — authentication successful</description>
+  </rule>
+
+  <rule id="100162" level="4">
+    <if_sid>31108</if_sid>
+    <match>POST /reports/submit/</match>
+    <description>Apache: POST request to /reports/submit/ — report submitted</description>
+  </rule>
+
+  <rule id="100160" level="3">
+    <if_sid>554</if_sid>
+    <field name="file">/var/lib/reports/</field>
+    <description>FIM: new file under /var/lib/reports/</description>
+  </rule>
+
+  <rule id="100170" level="7">
+    <match>tar</match>
+    <description>System log: tar invoked</description>
+  </rule>
+
+</group>
